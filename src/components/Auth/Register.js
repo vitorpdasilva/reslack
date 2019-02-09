@@ -60,9 +60,9 @@ class Register extends Component {
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then(createdUser => {
-        console.log(createdUser);
+        console.log('createduser', createdUser);
         createdUser.user.updateProfile({
-          username,
+          displayName: this.state.username,
           photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`,
         }).then(() => {
           this.saveUser(createdUser).then(() => {
