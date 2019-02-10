@@ -54,11 +54,13 @@ class MessagesForm extends Component {
   }
 
   render() {
-    const { errors } = this.state;
+    const { errors, message, loading } = this.state;
     return (
       <Segment className="message__form">
         <Input 
-          fluid 
+          fluid
+          disabled={loading}
+          value={message}
           name="message" 
           style={{ marginBottom: '.7em' }} 
           label={<Button icon={"add"} />}
