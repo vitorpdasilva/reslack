@@ -9,7 +9,7 @@ body,
 .messages {
   height: calc(100vh - 300px);
   overflow-y: scroll;
-  max-width: 100vw;
+  max-width: 100vw!important;
 }
 
 .messages__form {
@@ -24,4 +24,8 @@ body,
 .message__self {
   border-left: 2px solid orange;
   padding-left: 8px;
+}
+
+.message__image {
+  padding: 1em;
 }
