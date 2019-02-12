@@ -127,7 +127,7 @@ class MessagesForm extends Component {
         />
         <Button.Group icon widths="2">
           <Button color="orange" content="add Reply" onClick={this.sendMessage} labelPosition="left" icon="edit" />
-          <Button color="teal" content="upload media" onClick={this.openModal} labelPosition="right" icon="cloud upload" />
+          <Button color="teal" disabled={uploadState === 'uploading'} content="upload media" onClick={this.openModal} labelPosition="right" icon="cloud upload" />
         </Button.Group>
         <FileModal uploadFile={this.uploadFile} modal={modal} closeModal={this.closeModal} />
         <Progressbar uploadState={uploadState} percentUploaded={percentUploaded} />
