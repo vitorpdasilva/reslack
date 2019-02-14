@@ -7,10 +7,6 @@ class UserPanel extends Component {
   state = {
     user: this.props.currentUser,
   }
-
-  componentWillReceiveProps(nextProps) {
-
-  }
   
   dropDownOptions = () => [
     { key: 'user', text: <span>Signed in as <strong>{this.state.user && this.state.user.displayName}</strong></span>, disabled: true },

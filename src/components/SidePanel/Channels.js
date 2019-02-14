@@ -26,7 +26,7 @@ class Channels extends Component {
   }
 
   removeListeners = () => {
-    this.state.channels.off();
+    this.state.channelsRef.off();
   }
 
   addListeners = () => {
