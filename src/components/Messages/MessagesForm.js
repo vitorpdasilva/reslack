@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { isPrivateChannel } from '../../actions';
 import firebase from '../../firebase';
 import uuidv4 from 'uuid/v4';
 import { Segment, Button, Input} from 'semantic-ui-react';
@@ -48,12 +49,13 @@ class MessagesForm extends Component {
   }
 
   sendMessage = () => {
-    const { messagesRef } = this.props;
+    const { getMessagesRef } = this.props;
     const { message, channel, errors } = this.state;
+
 
     if(message) {
       this.setState({ loading: true });
-      messagesRef
+      getMessagesRef()
         .child(channel.id)
         .push()
         .set(this.createMessage())
@@ -70,11 +72,18 @@ class MessagesForm extends Component {
     }
   }
 
+  getPath = () => {
+    if (this.props.isPrivateChannel) {
+      return `chat/private-${this.state.channel.id}`;
+    } 
+    return 'chat/public';
+  }
+
   uploadFile = (file, metadata) => {
     const { storageRef, errors } = this.state;
     const pathToUpload = this.state.channel.id;
-    const ref = this.props.messagesRef;
-    const filePath = `chat/public/${uuidv4()}.jpg`;
+    const ref = this.props.getMessagesRef();
+    const filePath = `${this.getPath()}/${uuidv4()}.jpg`;
     this.setState({ uploadState: 'uploading', uploadTask: storageRef.child(filePath).put(file, metadata) },
       () => {
         this.state.uploadTask.on('state_changed', snap => {
