@@ -14,6 +14,8 @@ export default class Messages extends Component {
     messages: [],
     messagesLoading: true,
     numUniqueUsers: '',
+    isChannelStarred: false,
+    usersRef: firebase.database().ref('users'),
     searchTerm: '',
     searchLoading: false,
     searchResults: [],
@@ -26,6 +28,54 @@ export default class Messages extends Component {
 
     if(channel && user) {
       this.addListeners(channel.id);
+      this.addUserStarListeners(channel.id, user.uid);
+    }
+  }
+
+  addUserStarListeners = (channelId, userId) => {
+    const { usersRef } = this.state;
+    usersRef
+    .child(userId)
+    .child('starred')
+    .once('value')
+    .then(data => {
+      if (data.val !== null) {
+        const channelIds = Object.keys(data.val());
+        const prevStarred = channelIds.includes(channelId);
+        this.setState({ isChannelStarred: prevStarred })
+      }
+    })
+  }
+
+  handleStar = () => {
+    this.setState(prevState => ({
+      isChannelStarred: !prevState.isChannelStarred
+    }), () => this.starChannel());
+  }
+
+  starChannel = () => {
+    const { isChannelStarred, usersRef, user, channel } = this.state;
+    if (isChannelStarred) {
+      usersRef.child(`${user.uid}/starred`)
+      .update({
+        [channel.id]: {
+          name: channel.name,
+          details: channel.details,
+          createdBy: {
+            name: channel.createdBy.name,
+            avatar: channel.createdBy.avatar,
+          }
+        }
+      })
+    } else {
+      usersRef
+      .child(`${user.uid}/starred`)
+      .child(channel.id)
+      .remove(err => {
+        if (err !== null) {
+          console.error(err);
+        } 
+      })
     }
   }
 
@@ -92,7 +142,7 @@ export default class Messages extends Component {
   }
 
   render() {
-    const { searchTerm, messagesRef, channel, user, messages, numUniqueUsers, searchResults, privateChannel, searchLoading } = this.state;
+    const { searchTerm, messagesRef, channel, user, messages, numUniqueUsers, searchResults, privateChannel, searchLoading, isChannelStarred } = this.state;
     return (
       <React.Fragment>
         <MessagesHeader 
@@ -101,6 +151,8 @@ export default class Messages extends Component {
           numUniqueUsers={numUniqueUsers}
           searchLoading={searchLoading}
           isPrivateChannel={privateChannel}
+          handleStar={this.handleStar}
+          isChannelStarred={isChannelStarred}
         />
         <Segment>
           <Comment.Group className="messages">
