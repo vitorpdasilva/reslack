@@ -1,32 +1,57 @@
-import React, { Component } from 'react';
-import { Segment, Accordion, Header, Icon, Image } from 'semantic-ui-react';
+import React from "react";
+import {
+  Segment,
+  Accordion,
+  Header,
+  Icon,
+  Image,
+  List
+} from "semantic-ui-react";
 
-export default class MetaPanel extends Component {
+class MetaPanel extends React.Component {
   state = {
-    privateChannel: this.props.isPrivateChannel,
-    activeIndex: 0,
     channel: this.props.currentChannel,
-  }
+    privateChannel: this.props.isPrivateChannel,
+    activeIndex: 0
+  };
 
   setActiveIndex = (event, titleProps) => {
     const { index } = titleProps;
     const { activeIndex } = this.state;
     const newIndex = activeIndex === index ? -1 : index;
     this.setState({ activeIndex: newIndex });
-  }
+  };
+
+  formatCount = num => (num > 1 || num === 0 ? `${num} posts` : `${num} post`);
+
+  displayTopPosters = posts =>
+    Object.entries(posts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([key, val], i) => (
+        <List.Item key={i}>
+          <Image avatar src={val.avatar} />
+          <List.Content>
+            <List.Header as="a">{key}</List.Header>
+            <List.Description>{this.formatCount(val.count)}</List.Description>
+          </List.Content>
+        </List.Item>
+      ))
+      .slice(0, 5);
 
   render() {
-    console.log(this.props);
     const { activeIndex, privateChannel, channel } = this.state;
+    const { userPosts } = this.props;
+
     if (privateChannel) return null;
+
     return (
       <Segment loading={!channel}>
         <Header as="h3" attached="top">
-          about # {channel && channel.name}
+          About # {channel && channel.name}
         </Header>
         <Accordion styled attached="true">
-          <Accordion.Title 
-            active={activeIndex === 0} 
+          <Accordion.Title
+            active={activeIndex === 0}
             index={0}
             onClick={this.setActiveIndex}
           >
@@ -38,8 +63,8 @@ export default class MetaPanel extends Component {
             {channel && channel.details}
           </Accordion.Content>
 
-          <Accordion.Title 
-            active={activeIndex === 1} 
+          <Accordion.Title
+            active={activeIndex === 1}
             index={1}
             onClick={this.setActiveIndex}
           >
@@ -48,11 +73,11 @@ export default class MetaPanel extends Component {
             Top Posters
           </Accordion.Title>
           <Accordion.Content active={activeIndex === 1}>
-            posters
+            <List>{userPosts && this.displayTopPosters(userPosts)}</List>
           </Accordion.Content>
 
-          <Accordion.Title 
-            active={activeIndex === 2} 
+          <Accordion.Title
+            active={activeIndex === 2}
             index={2}
             onClick={this.setActiveIndex}
           >
@@ -68,6 +93,8 @@ export default class MetaPanel extends Component {
           </Accordion.Content>
         </Accordion>
       </Segment>
-    )
+    );
   }
 }
+
+export default MetaPanel;
