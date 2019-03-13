@@ -19,6 +19,7 @@ class MessagesForm extends Component {
     uploading: '',
     uploadTask: null,
     percentUploaded: 0,
+    typingRef: firebase.database().ref('typing')
   };
 
   openModal = () =>  this.setState({ modal: true });
@@ -50,7 +51,7 @@ class MessagesForm extends Component {
 
   sendMessage = () => {
     const { getMessagesRef } = this.props;
-    const { message, channel, errors } = this.state;
+    const { message, channel, errors, typingRef, user } = this.state;
 
 
     if(message) {
@@ -61,6 +62,10 @@ class MessagesForm extends Component {
         .set(this.createMessage())
         .then(() => {
           this.setState({ loading: false, message: '', errors: [], })
+          typingRef
+            .child(channel.id)
+            .child(user.uid)
+            .set(user.displayName)    
         }).catch(err => {
           console.log(err);
           this.setState({ errors: errors.concat(err) })
@@ -116,6 +121,21 @@ class MessagesForm extends Component {
       })
   }
 
+  handleKeyDown = () => {
+    const { message, user } = this.state;
+    if (message) {
+      typingRef
+        .child(channel.id)
+        .child(user.uid)
+        .set(user.displayName)
+    } else {
+      typingRef
+        .child(channel.id)
+        .child(user.uid)
+        .remove()  
+    }
+  }
+
   render() {
     const { errors, message, loading, modal, uploadState, percentUploaded } = this.state;
     return (
@@ -130,6 +150,7 @@ class MessagesForm extends Component {
           labelPosition="left"
           placeholder="write your message"
           onChange={this.handleChange}
+          onKeyDown={this.handleKeyDown}
           className={errors.some(error =>
             error.message.includes('message')) ? 'error' : null
           }
