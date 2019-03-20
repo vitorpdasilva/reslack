@@ -31,7 +31,6 @@ class Messages extends React.Component {
 
   componentDidMount() {
     const { channel, user } = this.state;
-
     if (channel && user) {
       this.addListeners(channel.id);
       this.addUserStarsListener(channel.id, user.uid);
@@ -224,6 +223,16 @@ class Messages extends React.Component {
       </div>
     ));
 
+  componentDidUpdate() {
+    if (this.messagesEnd) {
+      this.scrollToBottom()
+    }
+  }
+
+  scrollToBottom = () => {
+    this.messagesEnd.scrollIntoView({ behavior: 'smooth' });
+  }
+
   render() {
     // prettier-ignore
     const { messagesRef, messages, channel, user, numUniqueUsers, searchTerm, searchResults, searchLoading, privateChannel, isChannelStarred, typingUsers } = this.state;
@@ -246,6 +255,7 @@ class Messages extends React.Component {
               ? this.displayMessages(searchResults)
               : this.displayMessages(messages)}
             {this.displayTypingUsers(typingUsers)}
+            <div ref={node => (this.messagesEnd) = node}></div>
           </Comment.Group>
         </Segment>
 
