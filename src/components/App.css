@@ -37,3 +37,7 @@ body,
 .menu {
   padding-bottom: 2em;
 }
+
+.emojipicker {
+  position: absolute;
+}
