@@ -42,6 +42,14 @@ class ColorPanel extends React.Component {
 
   closeModal = () => this.setState({ modal: false });
 
+  componentWillMount() {
+    this.removeListeners();
+  }
+
+  removeListeners = () => {
+    this.state.usersRef.child(`${this.state.user.uid}/colors`).off();
+  }
+
   render() {
     const { modal, primary, secondary } = this.state;
 
