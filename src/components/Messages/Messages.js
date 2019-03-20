@@ -271,7 +271,7 @@ class Messages extends React.Component {
           <Skeleton key={i} />
         ))}
       </React.Fragment>
-    ) : null;
+    ) : '';
 
   render() {
     // prettier-ignore
